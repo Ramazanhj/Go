@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пойдёшь гулять? ❤️</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#ff9ecf,#ffd6ea);
+    min-height:100vh;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.container{
+    padding:20px;
+}
+
+h1{
+    font-size:2.2rem;
+    color:white;
+    margin-bottom:30px;
+    text-shadow:2px 2px 5px rgba(0,0,0,.2);
+}
+
+.buttons{
+    position:relative;
+    width:320px;
+    height:180px;
+    margin:auto;
+}
+
+button{
+    border:none;
+    border-radius:15px;
+    padding:15px 30px;
+    font-size:1.2rem;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+#yesBtn{
+    background:#ff4f8b;
+    color:white;
+}
+
+#yesBtn:hover{
+    transform:scale(1.1);
+}
+
+#noBtn{
+    position:absolute;
+    left:180px;
+    top:0;
+    background:white;
+}
+
+.hidden{
+    display:none;
+}
+
+#result{
+    color:white;
+    margin-top:25px;
+}
+
+input[type="time"]{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:1.1rem;
+    margin-top:15px;
+}
+
+#sendTime{
+    margin-top:15px;
+    background:#ff4f8b;
+    color:white;
+}
+
+.heart{
+    position:fixed;
+    font-size:25px;
+    animation:floatUp 4s linear forwards;
+    pointer-events:none;
+}
+
+@keyframes floatUp{
+    from{
+        transform:translateY(0) scale(1);
+        opacity:1;
+    }
+    to{
+        transform:translateY(-600px) scale(2);
+        opacity:0;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Пойдёшь гулять со мной? ❤️</h1>
+
+    <div class="buttons">
+        <button id="yesBtn">Да ❤️</button>
+        <button id="noBtn">Нет 😅</button>
+    </div>
+
+    <div id="result" class="hidden">
+        <h2>Урааа! 🥰 Во сколько?</h2>
+
+        <input type="time" id="timePicker">
+
+        <br>
+
+        <button id="sendTime">
+            Подтвердить ❤️
+        </button>
+
+        <p id="finalText"></p>
+    </div>
+
+</div>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const result = document.getElementById("result");
+
+function moveButton(){
+    const maxX = window.innerWidth - 120;
+    const maxY = window.innerHeight - 80;
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+noBtn.addEventListener("mouseover", moveButton);
+noBtn.addEventListener("touchstart", function(e){
+    e.preventDefault();
+    moveButton();
+});
+
+yesBtn.addEventListener("click", () => {
+
+    document.querySelector(".buttons").classList.add("hidden");
+    result.classList.remove("hidden");
+
+    createHearts();
+});
+
+function createHearts(){
+
+    for(let i=0;i<60;i++){
+
+        setTimeout(() => {
+
+            const heart = document.createElement("div");
+
+            heart.className = "heart";
+            heart.innerHTML = "❤️";
+
+            heart.style.left =
+                Math.random()*window.innerWidth+"px";
+
+            heart.style.top =
+                window.innerHeight+"px";
+
+            heart.style.fontSize =
+                (20+Math.random()*30)+"px";
+
+            document.body.appendChild(heart);
+
+            setTimeout(()=>{
+                heart.remove();
+            },4000);
+
+        },i*100);
+
+    }
+}
+
+document.getElementById("sendTime")
+.addEventListener("click", async () => {
+
+    const time =
+        document.getElementById("timePicker").value;
+
+    if(!time){
+        alert("Выбери время ❤️");
+        return;
+    }
+
+    document.getElementById("finalText")
+    .innerHTML =
+    `Отлично! Жду тебя в ${time} ❤️`;
+
+    // Telegram
+    const BOT_TOKEN = "8810666489:AAFi_IwSfnFUaQQT-Z5kjGjosHUKDwSR99g";
+    const CHAT_ID = "168899110";
+
+    const text =
+`🎉 Она согласилась гулять!
+
+⏰ Время: ${time}`;
+
+    try{
+
+        await fetch(
+        `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                chat_id:CHAT_ID,
+                text:text
+            })
+        });
+
+    }catch(err){
+        console.log(err);
+    }
+});
+</script>
+
+</body>
+</html>
